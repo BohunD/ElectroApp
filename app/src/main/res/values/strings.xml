@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">ElectroApp</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="email_hint">Email</string>
+    <string name="sign_in">Sign in</string>
+    <string name="password_hint">Password</string>
+    <string name="do_not_have_acc">Do not have an account? \nGo to Sign Up!</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="go_to_signin">Already have an account?\nGo to Sign In!</string>
+    <string name="username_hint">Username</string>
+</resources>
