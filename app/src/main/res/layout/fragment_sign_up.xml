@@ -83,6 +83,7 @@
         android:textColor="@color/white"
         android:layout_marginTop="30dp"/>
     <TextView
+        android:id="@+id/tv_signin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/btn_signup"
@@ -91,6 +92,18 @@
         android:text="@string/go_to_signin"
         android:gravity="center"
         />
+    <LinearLayout
+        android:id="@+id/signup_progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparentGrey"
+        android:gravity="center"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

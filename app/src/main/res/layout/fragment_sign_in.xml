@@ -75,6 +75,18 @@
         android:text="@string/do_not_have_acc"
         android:gravity="center"
         />
+    <LinearLayout
+        android:id="@+id/login_progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/transparentGrey"
+        android:gravity="center"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

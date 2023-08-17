@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "107097912919",
+    "project_id": "electroapp-bec0f",
+    "storage_bucket": "electroapp-bec0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107097912919:android:3ed4bcb65d138806fe9512",
+        "android_client_info": {
+          "package_name": "com.example.electroapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107097912919-nkplskhv63h0921bl3s3s8k7miumb43v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyLNgvYXmLybitpbJFq2S1SZIlahfROUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107097912919-nkplskhv63h0921bl3s3s8k7miumb43v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
