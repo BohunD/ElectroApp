@@ -25,6 +25,8 @@ class SignInFragment : Fragment() {
         val user = firebaseAuth.currentUser?.uid
         user?.let {
             requireActivity().startActivity(HomeActivity.newIntent(requireContext()))
+            requireActivity().finish()
+
         }
     }
 
@@ -103,6 +105,8 @@ class SignInFragment : Fragment() {
         requireActivity().supportFragmentManager
             .beginTransaction().replace(R.id.main_container, SignUpFragment.newInstance())
             .commit()
+        requireActivity().finish()
+
     }
 
     override fun onStart() {
