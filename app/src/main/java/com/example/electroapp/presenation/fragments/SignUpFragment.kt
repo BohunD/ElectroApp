@@ -48,6 +48,8 @@ class SignUpFragment : Fragment() {
         with(binding) {
             setOnTextChangedListener(etEmail, tilEmail)
             setOnTextChangedListener(etPassword, tilPassword)
+            setOnTextChangedListener(etUsername, tilUsername)
+            setOnTextChangedListener(etPhone, tilPhone)
             btnSignup.setOnClickListener { onSignUp() }
             tvSignin.setOnClickListener { goToSignIn() }
 
@@ -82,6 +84,11 @@ class SignUpFragment : Fragment() {
             tilEmail.isErrorEnabled = true
             proceed = false
         }
+        if (etPhone.text.isNullOrEmpty()) {
+            tilPhone.error = "Phone number is required"
+            tilPhone.isErrorEnabled = true
+            proceed = false
+        }
         if (etPassword.text.isNullOrEmpty()) {
             tilPassword.error = "Password is required"
             tilPassword.isErrorEnabled = true
@@ -102,6 +109,7 @@ class SignUpFragment : Fragment() {
                     val user = User(
                         etEmail.text.toString(),
                         etUsername.text.toString(),
+                        etPhone.text.toString(),
                         DEFAULT_USER_PHOTO,
                         arrayListOf()
                     )

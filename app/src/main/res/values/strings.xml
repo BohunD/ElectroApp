@@ -16,4 +16,5 @@
     <string name="post">Post</string>
     <string name="write_short_description_for_your_product">Write short description for your product</string>
     <string name="category">Category:</string>
+    <string name="city">City</string>
 </resources>

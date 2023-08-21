@@ -39,6 +39,8 @@ class ProfileFragment : ElectroFragment() {
     private val firebaseStorage = FirebaseStorage.getInstance().reference
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private var imageUrl: String?=null
+    private var userName: String?=null
+    private var userPhone: String?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,10 +80,18 @@ class ProfileFragment : ElectroFragment() {
             .addOnSuccessListener {
                 val user = it.toObject(User::class.java)
                 imageUrl = user?.imageUrl
-                Log.d("MyLog", imageUrl.toString())
+                userName = user?.username
+                userPhone = user?.phoneNumber
                 imageUrl?.let{url ->
                     ivUserPhoto.loadUrl(url)
                 }
+                userName?.let{name ->
+                    tvName.text = name
+                }
+                userPhone?.let{phone ->
+                    tvPhone.text = phone
+                }
+
             }
 
     }

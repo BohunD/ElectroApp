@@ -105,8 +105,6 @@ class SignInFragment : Fragment() {
         requireActivity().supportFragmentManager
             .beginTransaction().replace(R.id.main_container, SignUpFragment.newInstance())
             .commit()
-        requireActivity().finish()
-
     }
 
     override fun onStart() {

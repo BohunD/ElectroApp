@@ -9,5 +9,6 @@ data class Advertisement(
     val categoryName: String,
     val filters: Map<String, String>,
     val description: String,
+    val city: String,
     val dateTime: Long
 )

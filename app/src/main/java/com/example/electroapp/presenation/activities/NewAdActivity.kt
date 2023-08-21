@@ -142,6 +142,7 @@ class NewAdActivity : AppCompatActivity() {
         val adName = binding.etName.text.toString()
         val adDescription = binding.etDescription.text.toString()
         val adPrice = binding.etPrice.text?.toString()
+        val adCity = binding.etCity.text?.toString()
         var photos: MutableList<Uri>? = null
         val category = binding.spinnerCategory.selectedItem.toString()
         var filters: Map<String, String>? = null
@@ -151,12 +152,13 @@ class NewAdActivity : AppCompatActivity() {
         viewModel.filters.observe(this) {
             filters = it
         }
-        if (validateInput(adName, adDescription, adPrice.toString())) {
+        if (validateInput(adName, adDescription, adPrice.toString(), adCity)) {
             val ad = Advertisement(
                 photos!!.subList(1, photos!!.size),
                 adName, adPrice!!,
                 category, filters!!,
-                adDescription, System.currentTimeMillis()
+                adDescription, adCity!!,
+                System.currentTimeMillis()
             )
             val adId = firebaseDB.collection(DATA_ADS).document()
             adId.set(ad).addOnCompleteListener {
@@ -171,10 +173,11 @@ class NewAdActivity : AppCompatActivity() {
         }
     }
 
-    private fun validateInput(name: String?, description: String?, price: String?): Boolean {
+    private fun validateInput(name: String?, description: String?, price: String?, city: String?): Boolean {
         viewModel.isCategorySelected.value = binding.spinnerCategory.selectedItemPosition != 0
         viewModel.isNameValid.value = !name?.isEmpty()!!
         viewModel.isDescriptionValid.value = !description?.isEmpty()!!
+        viewModel.isCityValid.value = !city?.isEmpty()!!
         viewModel.isPriceValid.value = (price != null && price != "")
 
         if (viewModel.canPostAdvertisement()) {
@@ -188,6 +191,9 @@ class NewAdActivity : AppCompatActivity() {
             }
             if (!viewModel.isPriceValid.value!!) {
                 binding.tilPrice.error = "Empty field"
+            }
+            if (!viewModel.isCityValid.value!!) {
+                binding.tilCity.error = "Empty field"
             }
             if (!viewModel.isCategorySelected.value!!) {
                 binding.spinnerCategory.background =
@@ -229,6 +235,17 @@ class NewAdActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 binding.tilPrice.error = null
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+            }
+        })
+        binding.etPrice.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                binding.tilCity.error = null
             }
 
             override fun afterTextChanged(p0: Editable?) {

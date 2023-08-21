@@ -22,6 +22,7 @@ class NewAdViewModel : ViewModel() {
     val isNameValid = MutableLiveData<Boolean>()
     val isDescriptionValid = MutableLiveData<Boolean>()
     val isPriceValid = MutableLiveData<Boolean>()
+    val isCityValid = MutableLiveData<Boolean>()
 
     fun addFilters(name: String, filter: String) {
         val pair = Pair(name, filter)
@@ -59,7 +60,8 @@ class NewAdViewModel : ViewModel() {
         return isCategorySelected.value == true &&
                 isNameValid.value == true &&
                 isDescriptionValid.value == true &&
-                isPriceValid.value == true
+                isPriceValid.value == true &&
+                isCityValid.value == true
     }
 
     fun addPhoto(uri: Uri?) {
