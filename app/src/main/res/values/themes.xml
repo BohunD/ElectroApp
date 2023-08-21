@@ -13,5 +13,8 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+
+
+
     <style name="Theme.ElectroApp" parent="Base.Theme.ElectroApp" />
 </resources>

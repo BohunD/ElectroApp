@@ -27,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
+    private lateinit var tabs : TabLayout
+
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseAuthListener = FirebaseAuth.AuthStateListener {
         val user = firebaseAuth.currentUser?.uid
@@ -34,6 +36,7 @@ class HomeActivity : AppCompatActivity() {
             startActivity(HomeActivity.newIntent(this))
         }
     }
+    private var userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val fragmentList = listOf<Fragment>(
         HomeFragment.newInstance(),
@@ -61,15 +64,27 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun initViews() = with(binding) {
+        tabs = this.tabLayout
         sectionPageAdapter = SectionPageAdapter(this@HomeActivity as FragmentActivity, fragmentList)
         viewPager.adapter = sectionPageAdapter
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+        TabLayoutMediator(tabs, viewPager) { tab, position ->
             tab.icon = ContextCompat.getDrawable(this@HomeActivity, iconList[position])
             tab.text = tabTextList[position]
+            tab.view.setOnClickListener {
+                if (position == 2)
+                    userId?.let {
+                        startActivity(NewAdActivity.newIntent(this@HomeActivity, userId!!))
+                    }
+            }
         }.attach()
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tabs.getTabAt(0)?.select()
     }
 
 

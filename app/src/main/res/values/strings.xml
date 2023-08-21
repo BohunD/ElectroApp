@@ -10,4 +10,10 @@
     <string name="go_to_signin">Already have an account?\nGo to Sign In!</string>
     <string name="username_hint">Username</string>
     <string name="phone_number">Phone number</string>
+    <string name="name_of_product">Name of product</string>
+    <string name="price">Price</string>
+    <string name="currency">$</string>
+    <string name="post">Post</string>
+    <string name="write_short_description_for_your_product">Write short description for your product</string>
+    <string name="category">Category:</string>
 </resources>

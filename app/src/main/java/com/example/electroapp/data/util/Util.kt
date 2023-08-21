@@ -14,6 +14,10 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.error_image)
     Glide.with(context.applicationContext).load(url).apply(options).into(this)
 }
 
+fun ImageView.loadFromDrawable(path: Int){
+    Glide.with(context.applicationContext).load(path).into(this)
+}
+
 fun progressDrawable(context: Context): CircularProgressDrawable {
     return CircularProgressDrawable(context).apply {
         strokeWidth = 5f
