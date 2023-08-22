@@ -1,16 +1,19 @@
 package com.example.electroapp.presenation.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.example.electroapp.R
 import com.example.electroapp.databinding.ActivityHomeBinding
 import com.example.electroapp.presenation.adapters.SectionPageAdapter
@@ -30,12 +33,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var tabs : TabLayout
 
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val firebaseAuthListener = FirebaseAuth.AuthStateListener {
-        val user = firebaseAuth.currentUser?.uid
-        user?.let {
-            startActivity(HomeActivity.newIntent(this))
-        }
-    }
+
     private var userId = FirebaseAuth.getInstance().currentUser?.uid
 
     private val fragmentList = listOf<Fragment>(
@@ -52,6 +50,7 @@ class HomeActivity : AppCompatActivity() {
     private val tabTextList = listOf(
         "home", "followed", "new ad", "liked", "profile"
     )
+    private val customPageChangeCallback = CustomPageChangeCallback(this)
 
 
 
@@ -63,28 +62,41 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("InflateParams")
     private fun initViews() = with(binding) {
         tabs = this.tabLayout
         sectionPageAdapter = SectionPageAdapter(this@HomeActivity as FragmentActivity, fragmentList)
         viewPager.adapter = sectionPageAdapter
 
+        viewPager.registerOnPageChangeCallback(customPageChangeCallback)
+
         TabLayoutMediator(tabs, viewPager) { tab, position ->
-            tab.icon = ContextCompat.getDrawable(this@HomeActivity, iconList[position])
-            tab.text = tabTextList[position]
-            tab.view.setOnClickListener {
-                if (position == 2)
-                    userId?.let {
-                        startActivity(NewAdActivity.newIntent(this@HomeActivity, userId!!))
-                    }
+            if (position != 2) {
+                tab.icon = ContextCompat.getDrawable(this@HomeActivity, iconList[position])
+                tab.text = tabTextList[position]
+            } else {
+                val customView = layoutInflater.inflate(R.layout.custom_tab_view, null)
+                val tabTitle = customView.findViewById<TextView>(R.id.tabTitle)
+                tabTitle.text = tabTextList[position]
+                tab.customView = customView
             }
         }.attach()
 
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        tabs.getTabAt(0)?.select()
+    class CustomPageChangeCallback(private val activity: HomeActivity) : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            if (position == 2) {
+                activity.startActivity(NewAdActivity.newIntent(activity, activity.userId!!))
+                activity.finish()
+            }
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+
     }
 
 

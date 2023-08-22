@@ -9,6 +9,8 @@ const val DATA_USER_USERNAME = "username"
 const val DATA_USER_IMAGE_URL = "imageUrl"
 const val DATA_USER_FOLLOW = "followUsers"
 const val DATA_IMAGES = "images"
+const val DATA_AD_USER_ID = "userId"
+const val DATA_AD_PHOTOS = "photos"
 
 const val PARAM_USER_ID = "userId"
 const val PARAM_USER_NAME = "userName"
@@ -17,6 +19,8 @@ const val DATA_ADS= "advertisements"
 
 
 const val DEFAULT_USER_PHOTO = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/2048px-User-avatar.svg.png"
+const val NO_ADVERTISEMENT_PHOTO = "https://t4.ftcdn.net/jpg/04/99/93/31/360_F_499933117_ZAUBfv3P1HEOsZDrnkbNCt4jc3AodArl.jpg"
+
 val CATEGORIES = arrayListOf(
     Category("Smartphones", R.drawable.phones, mapOf(
         "Brand" to arrayListOf("Other", "Apple", "Samsung", "Huawei", "Xiaomi",

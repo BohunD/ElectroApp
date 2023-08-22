@@ -1,6 +1,5 @@
 package com.example.electroapp.presenation.activities
 
-import android.R.attr
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -8,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -16,8 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.view.size
-import androidx.core.widget.addTextChangedListener
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.electroapp.R
@@ -26,14 +23,17 @@ import com.example.electroapp.data.models.Category
 import com.example.electroapp.data.models.User
 import com.example.electroapp.data.util.CATEGORIES
 import com.example.electroapp.data.util.DATA_ADS
+import com.example.electroapp.data.util.DATA_AD_PHOTOS
 import com.example.electroapp.data.util.PARAM_USER_ID
 import com.example.electroapp.data.util.PARAM_USER_NAME
 import com.example.electroapp.databinding.ActivityNewAdBinding
 import com.example.electroapp.presenation.adapters.AdFilterAdapter
 import com.example.electroapp.presenation.adapters.AdPhotosAdapter
 import com.example.electroapp.presenation.viewmodels.NewAdViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 
 class NewAdActivity : AppCompatActivity() {
@@ -50,6 +50,10 @@ class NewAdActivity : AppCompatActivity() {
     private lateinit var adapter: AdPhotosAdapter
     private lateinit var filtersAdapter: AdFilterAdapter
     private val firebaseDB = FirebaseFirestore.getInstance()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val firebaseStorage = FirebaseStorage.getInstance().reference
+    private var imageUrl: String? = null
+    private var listPhotos: ArrayList<String> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +72,8 @@ class NewAdActivity : AppCompatActivity() {
         binding.btnPost.setOnClickListener {
             postAdvertisement()
         }
+
+        addTextChangeListeners()
     }
 
     private fun initAdFilterAdapter() {
@@ -122,19 +128,24 @@ class NewAdActivity : AppCompatActivity() {
             for (i in 0 until count) {
                 val imageUrl: Uri = data.clipData!!.getItemAt(i).uri
                 viewModel.addPhoto(imageUrl)
+                storeImage(imageUrl)
+
             }
             viewModel.photoListLiveData.observe(this) {
                 adapter = AdPhotosAdapter(viewModel, it, resultLauncher)
                 binding.rvPhotos.adapter = adapter
             }
+
         } else if (data?.data != null) {
             val imageUrl = data.data
             viewModel.addPhoto(imageUrl!!)
+            storeImage(imageUrl)
             viewModel.photoListLiveData.observe(this) {
-                val adapter = AdPhotosAdapter(viewModel, it, resultLauncher)
+                adapter = AdPhotosAdapter(viewModel, it, resultLauncher)
                 binding.rvPhotos.adapter = adapter
             }
         }
+
     }
 
     private fun postAdvertisement() {
@@ -143,22 +154,22 @@ class NewAdActivity : AppCompatActivity() {
         val adDescription = binding.etDescription.text.toString()
         val adPrice = binding.etPrice.text?.toString()
         val adCity = binding.etCity.text?.toString()
-        var photos: MutableList<Uri>? = null
+        var photos: MutableList<String>? = null
         val category = binding.spinnerCategory.selectedItem.toString()
         var filters: Map<String, String>? = null
-        viewModel.photoListLiveData.observe(this) {
-            photos = it
-        }
+
         viewModel.filters.observe(this) {
             filters = it
         }
+
         if (validateInput(adName, adDescription, adPrice.toString(), adCity)) {
             val ad = Advertisement(
-                photos!!.subList(1, photos!!.size),
+                listPhotos,
                 adName, adPrice!!,
                 category, filters!!,
                 adDescription, adCity!!,
-                System.currentTimeMillis()
+                System.currentTimeMillis(),
+                userId!!
             )
             val adId = firebaseDB.collection(DATA_ADS).document()
             adId.set(ad).addOnCompleteListener {
@@ -171,9 +182,56 @@ class NewAdActivity : AppCompatActivity() {
         } else {
             binding.llProgressBar.visibility = View.GONE
         }
+        startActivity(HomeActivity.newIntent(this))
     }
 
-    private fun validateInput(name: String?, description: String?, price: String?, city: String?): Boolean {
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(HomeActivity.newIntent(this))
+    }
+
+
+    private fun storeImage(imageUri: Uri?) {
+        imageUri?.let {
+            Toast.makeText(this@NewAdActivity, "Uploading...", Toast.LENGTH_SHORT).show()
+            binding.llProgressBar.visibility = View.VISIBLE
+            val uniqueImageName = "${System.currentTimeMillis()}_${UUID.randomUUID()}"
+            val filePath =
+                firebaseStorage.child(DATA_AD_PHOTOS).child(userId!!).child(uniqueImageName)
+            filePath.putFile(imageUri)
+                .addOnSuccessListener {
+                    filePath.downloadUrl
+                        .addOnSuccessListener {
+                            val url = it.toString()
+                            listPhotos.add(url)
+                            binding.llProgressBar.visibility = View.GONE
+                        }
+
+                        .addOnFailureListener {
+                            it.printStackTrace()
+                            onUploadFailure()
+                        }
+                }.addOnFailureListener {
+                    it.printStackTrace()
+                    onUploadFailure()
+                }
+        }
+    }
+
+    private fun onUploadFailure() {
+        Toast.makeText(
+            this@NewAdActivity,
+            "Upload failed. Try again later", Toast.LENGTH_SHORT
+        ).show()
+        binding.llProgressBar.visibility = View.GONE
+    }
+
+    private fun validateInput(
+        name: String?,
+        description: String?,
+        price: String?,
+        city: String?
+    ): Boolean {
         viewModel.isCategorySelected.value = binding.spinnerCategory.selectedItemPosition != 0
         viewModel.isNameValid.value = !name?.isEmpty()!!
         viewModel.isDescriptionValid.value = !description?.isEmpty()!!
@@ -189,6 +247,7 @@ class NewAdActivity : AppCompatActivity() {
             if (!viewModel.isNameValid.value!!) {
                 binding.tilName.error = "Empty field"
             }
+
             if (!viewModel.isPriceValid.value!!) {
                 binding.tilPrice.error = "Empty field"
             }
@@ -201,7 +260,7 @@ class NewAdActivity : AppCompatActivity() {
             }
             binding.llProgressBar.visibility = View.GONE
             Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show()
-            addTextChangeListeners()
+            //addTextChangeListeners()
             return false
         }
     }
@@ -213,6 +272,15 @@ class NewAdActivity : AppCompatActivity() {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 binding.tilName.error = null
+                binding.tilName.hint = "${binding.etName.text?.length!!}/50"
+                if (binding.etName.text?.length!! > 50) {
+                    binding.tilName.error = "Maximum size - 50 characters"
+                    binding.etName.removeTextChangedListener(this)
+                    val truncatedText = binding.etName.text?.subSequence(0, 51)
+                    binding.etName.text?.clear()
+                    binding.etName.text?.append(truncatedText)
+                    binding.etName.addTextChangedListener(this)
+                }
             }
 
             override fun afterTextChanged(p0: Editable?) {
@@ -251,6 +319,11 @@ class NewAdActivity : AppCompatActivity() {
             override fun afterTextChanged(p0: Editable?) {
             }
         })
+        binding.etName.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus ) {
+                binding.tilName.hint = "Name of product"
+            }
+        }
     }
 
     companion object {

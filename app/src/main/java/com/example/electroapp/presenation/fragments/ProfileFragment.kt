@@ -12,14 +12,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.electroapp.R
+import com.example.electroapp.data.models.Advertisement
 import com.example.electroapp.data.models.User
+import com.example.electroapp.data.util.DATA_ADS
+import com.example.electroapp.data.util.DATA_AD_USER_ID
 import com.example.electroapp.data.util.DATA_IMAGES
 import com.example.electroapp.data.util.DATA_USERS
 import com.example.electroapp.data.util.DATA_USER_IMAGE_URL
 import com.example.electroapp.data.util.loadUrl
 import com.example.electroapp.databinding.FragmentProfileBinding
 import com.example.electroapp.presenation.activities.StartActivity
+import com.example.electroapp.presenation.adapters.AdvertisementsAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -27,20 +32,22 @@ import com.google.firebase.storage.FirebaseStorage
 
 class ProfileFragment : ElectroFragment() {
 
-    private lateinit var binding : FragmentProfileBinding
-    private var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            storeImage(data?.data)
+    private lateinit var binding: FragmentProfileBinding
+    private var resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data: Intent? = result.data
+                storeImage(data?.data)
+            }
         }
-    }
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
-    private var imageUrl: String?=null
-    private var userName: String?=null
-    private var userPhone: String?=null
+    private var imageUrl: String? = null
+    private var userName: String? = null
+    private var userPhone: String? = null
+    private var adapter: AdvertisementsAdapter?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,23 +65,24 @@ class ProfileFragment : ElectroFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-        with(binding){
-            ivUserPhoto.setOnClickListener {  launchPhotoLoading() }
+        with(binding) {
+            ivUserPhoto.setOnClickListener { launchPhotoLoading() }
             btnSignout.setOnClickListener {
                 firebaseAuth.signOut()
                 requireActivity().startActivity(StartActivity.newIntent(requireContext()))
                 requireActivity().finish()
             }
         }
+
     }
 
-    private fun launchPhotoLoading(){
+    private fun launchPhotoLoading() {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         resultLauncher.launch(intent)
     }
 
-    private fun initViews() = with(binding){
+    private fun initViews() = with(binding) {
 
         firebaseDB.collection(DATA_USERS).document(userId!!).get()
             .addOnSuccessListener {
@@ -82,21 +90,24 @@ class ProfileFragment : ElectroFragment() {
                 imageUrl = user?.imageUrl
                 userName = user?.username
                 userPhone = user?.phoneNumber
-                imageUrl?.let{url ->
-                    ivUserPhoto.loadUrl(url)
+                imageUrl?.let { url ->
+                    ivUserPhoto.loadUrl(ivUserPhoto.context,url)
                 }
-                userName?.let{name ->
+                userName?.let { name ->
                     tvName.text = name
                 }
-                userPhone?.let{phone ->
+                userPhone?.let { phone ->
                     tvPhone.text = phone
                 }
-
             }
+        rvYourAds.layoutManager = GridLayoutManager(context,2)
+        adapter = AdvertisementsAdapter(arrayListOf())
+        rvYourAds.adapter = adapter
+        updateList()
 
     }
 
-    private fun storeImage(imageUri: Uri?){
+    private fun storeImage(imageUri: Uri?) {
         imageUri?.let {
             Toast.makeText(requireContext(), "Uploading...", Toast.LENGTH_SHORT).show()
             binding.profileProgressLayout.visibility = View.VISIBLE
@@ -104,12 +115,13 @@ class ProfileFragment : ElectroFragment() {
             filePath.putFile(imageUri)
                 .addOnSuccessListener {
                     filePath.downloadUrl.addOnSuccessListener {
-                        var url = it.toString()
+                        val url = it.toString()
                         firebaseDB.collection(DATA_USERS).document(userId)
                             .update(DATA_USER_IMAGE_URL, url)
                             .addOnSuccessListener {
                                 imageUrl = url
-                                binding.ivUserPhoto.loadUrl(imageUrl, R.drawable.error_image)
+                                binding.ivUserPhoto.loadUrl( binding.ivUserPhoto.context
+                                    ,imageUrl, R.drawable.error_image)
                             }
                     }.addOnFailureListener {
                         onUploadFailure()
@@ -122,12 +134,30 @@ class ProfileFragment : ElectroFragment() {
 
     }
 
-    private fun onUploadFailure(){
+    private fun onUploadFailure() {
         Toast.makeText(
             requireContext(),
             "Upload failed. Try again later", Toast.LENGTH_SHORT
         ).show()
         binding.profileProgressLayout.visibility = View.GONE
+    }
+
+    private fun updateList() {
+        val ads = arrayListOf<Advertisement>()
+        Log.d("MyLog", firebaseDB.collection(DATA_ADS).whereEqualTo(DATA_AD_USER_ID, userId).get().toString())
+        firebaseDB.collection(DATA_ADS).whereEqualTo(DATA_AD_USER_ID, userId).get()
+            .addOnSuccessListener { list ->
+                for (document in list.documents) {
+                    val ad = document.toObject(Advertisement::class.java)
+                    ad?.let { ads.add(ad)}
+                }
+                adapter?.updateAds(ads)
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    requireContext(),
+                    "Something went wrong... :(", Toast.LENGTH_SHORT
+                ).show()            }
     }
 
     companion object {

@@ -25,7 +25,7 @@ import com.example.electroapp.presenation.viewmodels.NewAdViewModel
 
 class AdPhotosAdapter(
     private val viewModel: NewAdViewModel,
-    private val photoList: MutableList<Uri>,
+    private val photoList: MutableList<String>,
     private val resultLauncher: ActivityResultLauncher<Intent>
 ) :
     RecyclerView.Adapter<AdPhotosAdapter.PhotoViewHolder>() {
@@ -43,7 +43,7 @@ class AdPhotosAdapter(
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
         if (position == 0) {
-            holder.photoImageView.loadUrl("https://static.thenounproject.com/png/187803-200.png")
+            holder.photoImageView.loadUrl(holder.photoImageView.context,"https://static.thenounproject.com/png/187803-200.png")
             holder.deleteImageView.visibility = View.GONE
             holder.photoImageView.setOnClickListener {
                 val intent = Intent(Intent.ACTION_PICK)
@@ -54,7 +54,7 @@ class AdPhotosAdapter(
             }
         } else {
             val photoUri = photoList[position]
-            holder.photoImageView.loadUrl(photoUri.toString())
+            holder.photoImageView.loadUrl(holder.photoImageView.context, photoUri.toString())
         }
         holder.deleteImageView.setOnClickListener {
             viewModel.removePhoto(position)

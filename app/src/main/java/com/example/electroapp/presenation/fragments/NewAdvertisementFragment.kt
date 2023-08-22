@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import com.example.electroapp.R
 
 
-class NewAdvertisementFragment : ElectroFragment() {
+class NewAdvertisementFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

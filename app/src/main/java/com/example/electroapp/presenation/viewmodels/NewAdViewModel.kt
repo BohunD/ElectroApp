@@ -11,7 +11,7 @@ import com.example.electroapp.data.util.CATEGORIES
 import com.example.electroapp.data.util.loadFromDrawable
 
 class NewAdViewModel : ViewModel() {
-    val photoListLiveData = MutableLiveData<MutableList<Uri>>()
+    val photoListLiveData = MutableLiveData<MutableList<String>>()
 
     val selectedCategory = MutableLiveData<Category?>()
     val selectedFilters = MutableLiveData<Map<String, ArrayList<String>>?>()
@@ -23,6 +23,7 @@ class NewAdViewModel : ViewModel() {
     val isDescriptionValid = MutableLiveData<Boolean>()
     val isPriceValid = MutableLiveData<Boolean>()
     val isCityValid = MutableLiveData<Boolean>()
+    val isNameCorrectLength = MutableLiveData<Boolean>()
 
     fun addFilters(name: String, filter: String) {
         val pair = Pair(name, filter)
@@ -30,6 +31,7 @@ class NewAdViewModel : ViewModel() {
         val updatedFilters = currentFilters + pair
         filters.value = updatedFilters
     }
+
 
     fun updateSelectedCategoryAndFilters(position: Int) {
         if (position != 0) {
@@ -44,8 +46,8 @@ class NewAdViewModel : ViewModel() {
 
 
     fun init() {
-        val currentList = mutableListOf<Uri>()
-        currentList.add("".toUri())
+        val currentList = mutableListOf<String>()
+        currentList.add("")
         photoListLiveData.value = currentList
         selectedCategory.value = null
         selectedFilters.value = null
@@ -66,8 +68,8 @@ class NewAdViewModel : ViewModel() {
 
     fun addPhoto(uri: Uri?) {
         uri?.let {
-            val currentList = photoListLiveData.value ?: mutableListOf()
-            currentList.add(uri)
+
+            photoListLiveData.value?.add(uri.toString())
         }
     }
 
