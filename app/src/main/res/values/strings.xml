@@ -17,4 +17,7 @@
     <string name="write_short_description_for_your_product">Write short description for your product</string>
     <string name="category">Category:</string>
     <string name="city">City</string>
+    <string name="characteristics">Characteristics:</string>
+    <string name="seller_name">Seller`s name</string>
+    <string name="seller_ads">Seller`s ads</string>
 </resources>

@@ -25,6 +25,7 @@ import com.example.electroapp.data.util.loadUrl
 import com.example.electroapp.databinding.FragmentProfileBinding
 import com.example.electroapp.presenation.activities.StartActivity
 import com.example.electroapp.presenation.adapters.AdvertisementsAdapter
+import com.example.electroapp.presenation.listeners.AdListenerImpl
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -66,6 +67,8 @@ class ProfileFragment : ElectroFragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         with(binding) {
+            listener = AdListenerImpl(binding.rvYourAds,this@ProfileFragment)
+            adapter!!.setListener(listener!!)
             ivUserPhoto.setOnClickListener { launchPhotoLoading() }
             btnSignout.setOnClickListener {
                 firebaseAuth.signOut()

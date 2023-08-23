@@ -14,20 +14,15 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.electroapp.R
 import com.example.electroapp.data.models.Advertisement
-import com.example.electroapp.data.models.Category
-import com.example.electroapp.data.models.User
 import com.example.electroapp.data.util.CATEGORIES
 import com.example.electroapp.data.util.DATA_ADS
 import com.example.electroapp.data.util.DATA_AD_PHOTOS
 import com.example.electroapp.data.util.PARAM_USER_ID
-import com.example.electroapp.data.util.PARAM_USER_NAME
 import com.example.electroapp.databinding.ActivityNewAdBinding
-import com.example.electroapp.presenation.adapters.AdFilterAdapter
+import com.example.electroapp.presenation.adapters.AdFilterSpinnerAdapter
 import com.example.electroapp.presenation.adapters.AdPhotosAdapter
 import com.example.electroapp.presenation.viewmodels.NewAdViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -40,7 +35,7 @@ class NewAdActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNewAdBinding
     private lateinit var viewModel: NewAdViewModel
-    val resultLauncher =
+    private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
@@ -48,7 +43,7 @@ class NewAdActivity : AppCompatActivity() {
             }
         }
     private lateinit var adapter: AdPhotosAdapter
-    private lateinit var filtersAdapter: AdFilterAdapter
+    private lateinit var filtersAdapter: AdFilterSpinnerAdapter
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private val firebaseStorage = FirebaseStorage.getInstance().reference
@@ -94,7 +89,7 @@ class NewAdActivity : AppCompatActivity() {
                             selectedCategory?.let {
                                 val selectedFilters = it.filters
                                 selectedFilters?.let {
-                                    filtersAdapter = AdFilterAdapter(it, viewModel)
+                                    filtersAdapter = AdFilterSpinnerAdapter(it, viewModel)
                                     binding.rvFilter.adapter = filtersAdapter
                                 }
                             }
@@ -163,7 +158,9 @@ class NewAdActivity : AppCompatActivity() {
         }
 
         if (validateInput(adName, adDescription, adPrice.toString(), adCity)) {
+            val adId = firebaseDB.collection(DATA_ADS).document()
             val ad = Advertisement(
+                adId.id,
                 listPhotos,
                 adName, adPrice!!,
                 category, filters!!,
@@ -171,7 +168,6 @@ class NewAdActivity : AppCompatActivity() {
                 System.currentTimeMillis(),
                 userId!!
             )
-            val adId = firebaseDB.collection(DATA_ADS).document()
             adId.set(ad).addOnCompleteListener {
                 finish()
             }.addOnFailureListener {

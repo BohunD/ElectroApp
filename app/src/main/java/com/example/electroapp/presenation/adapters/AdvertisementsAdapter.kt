@@ -10,22 +10,25 @@ import com.example.electroapp.data.models.Advertisement
 import com.example.electroapp.data.util.NO_ADVERTISEMENT_PHOTO
 import com.example.electroapp.data.util.getDateTimeFromLong
 import com.example.electroapp.data.util.loadUrl
-import com.example.electroapp.databinding.ItemAdDemoBinding
+import com.example.electroapp.databinding.ItemYourAdDemoBinding
+import com.example.electroapp.presenation.listeners.AdListener
 
 class AdvertisementsAdapter(
     private val adsList: ArrayList<Advertisement>
 ) : RecyclerView.Adapter<AdvertisementsAdapter.AdsViewHolder>() {
 
-    class AdsViewHolder(binding: ItemAdDemoBinding) : RecyclerView.ViewHolder(binding.root) {
+    private var listener: AdListener?=null
+    class AdsViewHolder(binding: ItemYourAdDemoBinding) : RecyclerView.ViewHolder(binding.root) {
         val tvName = binding.tvAdsName
         val tvPrice = binding.tvAdsPrice
         val ivPhoto = binding.ivAdsPhoto
         val tvDate = binding.tvAdsDate
         val tvCity = binding.tvAdsCityName
+        val layout = binding.layout
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AdsViewHolder {
-        val binding = ItemAdDemoBinding.inflate(
+        val binding = ItemYourAdDemoBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return AdsViewHolder(binding)
@@ -36,18 +39,31 @@ class AdvertisementsAdapter(
     }
 
     override fun onBindViewHolder(holder: AdsViewHolder, position: Int) {
+        bind(holder, position, listener)
+    }
+
+    private fun bind(holder: AdsViewHolder, position: Int, listener: AdListener?) {
         holder.tvName.text = adsList[position].name
         holder.tvPrice.text = adsList[position].price
         holder.tvCity.text = adsList[position].city
         holder.tvDate.text = getDateTimeFromLong(adsList[position].dateTime)
         if (adsList[position].photos?.size!! > 0) {
-            Log.d("Looog",adsList[position].photos?.get(0).toString() )
+            Log.d("Looog", adsList[position].photos?.get(0).toString())
             Glide.with(holder.itemView).load(adsList[position].photos?.get(0)).into(holder.ivPhoto)
 
         } else {
             holder.ivPhoto.loadUrl(holder.ivPhoto.context, NO_ADVERTISEMENT_PHOTO)
         }
+
+            holder.layout.setOnClickListener {
+                listener?.onLayoutClick(adsList[position])
+            }
     }
+
+    fun setListener(l: AdListener){
+        listener = l
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateAds(newAds: List<Advertisement>){
         adsList.clear()

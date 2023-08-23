@@ -1,8 +1,12 @@
 package com.example.electroapp.data.models
 
 import android.net.Uri
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Advertisement(
+    val adId: String?,
     val photos: MutableList<String>?,
     val name: String?,
     val price: String?,
@@ -12,6 +16,6 @@ data class Advertisement(
     val city: String?,
     val dateTime: Long?,
     val userId: String?
-){
-    constructor() : this(null, null, null, null, null, null, null, null, null)
+): Parcelable{
+    constructor() : this(null, null, null, null, null, null, null, null, null, null)
 }

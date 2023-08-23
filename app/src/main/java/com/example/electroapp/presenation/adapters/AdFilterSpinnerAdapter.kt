@@ -1,7 +1,6 @@
 package com.example.electroapp.presenation.adapters
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +10,13 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.electroapp.R
-import com.example.electroapp.data.util.CATEGORIES
 import com.example.electroapp.presenation.viewmodels.NewAdViewModel
 
-class AdFilterAdapter(
+class AdFilterSpinnerAdapter(
     private val filterMap: Map<String, ArrayList<String>>,
     private val viewModel: NewAdViewModel
 ) :
-    RecyclerView.Adapter<AdFilterAdapter.FilterViewHolder>() {
+    RecyclerView.Adapter<AdFilterSpinnerAdapter.FilterViewHolder>() {
 
     class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvFilterName: TextView = view.findViewById(R.id.tv_filter_name)

@@ -11,6 +11,7 @@ const val DATA_USER_FOLLOW = "followUsers"
 const val DATA_IMAGES = "images"
 const val DATA_AD_USER_ID = "userId"
 const val DATA_AD_PHOTOS = "photos"
+const val DATA_AD_ID = "adId"
 
 const val PARAM_USER_ID = "userId"
 const val PARAM_USER_NAME = "userName"
