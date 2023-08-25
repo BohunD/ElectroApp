@@ -45,8 +45,8 @@ class HomeFragment : ElectroFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[AdvertisementViewModel::class.java]
-        adapter = AdvertisementsAdapter(arrayListOf())
-        listener = AdListenerImpl(binding.rvAdvertisements,this@HomeFragment)
+        adapter = AdvertisementsAdapter(arrayListOf(),userId!!)
+        listener = AdListenerImpl(binding.rvAdvertisements,this@HomeFragment, adapter!!)
         adapter!!.setListener(listener!!)
         binding.rvAdvertisements.adapter = adapter
         updateList()

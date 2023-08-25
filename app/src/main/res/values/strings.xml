@@ -23,4 +23,6 @@
     <string name="product_name">Product name</string>
     <string name="sign_out">Sign out</string>
     <string name="follow_seller">Follow seller</string>
+    <string name="your_subscriptions">Your subscriptions</string>
+    <string name="your_favourites">Your favourites</string>
 </resources>

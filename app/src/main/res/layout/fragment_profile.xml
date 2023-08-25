@@ -55,7 +55,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="10dp"
-        android:id="@+id/rv_your_ads"
+        android:id="@+id/rv_user_ads"
         android:layout_width="match_parent"
         android:background="@color/lightLightGrey"
 

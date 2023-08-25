@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,6 @@ import com.google.firebase.storage.FirebaseStorage
 class SellerAdsFragment : ElectroFragment() {
 
     private val firebaseDB = FirebaseFirestore.getInstance()
-    private val firebaseStorage = FirebaseStorage.getInstance().reference
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
     private var adapter: AdvertisementsAdapter?=null
     private var sellerId: String?=null
@@ -55,15 +55,15 @@ class SellerAdsFragment : ElectroFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViews()
+        initUser()
     }
 
     @SuppressLint("SetTextI18n")
     private fun initViews() {
         arguments.let {
             var ad: Advertisement? = null
-            listener = AdListenerImpl(binding.rvYourAds,this@SellerAdsFragment)
-            adapter = AdvertisementsAdapter(arrayListOf())
+            adapter = AdvertisementsAdapter(arrayListOf(), userId!!)
+            listener = AdListenerImpl(binding.rvUserAds,this@SellerAdsFragment, adapter!!)
             adapter!!.setListener(listener!!)
             binding.profileProgressLayout.visibility = View.VISIBLE
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -90,7 +90,8 @@ class SellerAdsFragment : ElectroFragment() {
                     binding.profileProgressLayout.visibility = View.GONE
                 }
 
-            binding.rvYourAds.adapter = adapter
+            binding.rvUserAds.adapter = adapter
+
             if(user?.followUsers?.contains(sellerId) == true)
                 binding.btnFollow.text = "Unfollow"
             else binding.btnFollow.text = "Follow"
@@ -103,13 +104,15 @@ class SellerAdsFragment : ElectroFragment() {
         firebaseDB.collection(DATA_USERS).document(userId!!).get()
             .addOnSuccessListener { it ->
                 user = it.toObject(User::class.java)
+                initViews()
             }.addOnFailureListener {
                 it.printStackTrace()
             }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun onFollowClicked(){
-        initUser()
+
         if(sellerId != userId){
             if(user?.followUsers?.contains(sellerId) == true){
                 AlertDialog.Builder(context).setTitle("Unfollow ${seller?.username}?")
@@ -124,6 +127,7 @@ class SellerAdsFragment : ElectroFragment() {
                         ).addOnSuccessListener {
                             Toast.makeText(requireContext(),
                                 "Unfollowed", Toast.LENGTH_SHORT).show()
+                            binding.btnFollow.text = "Follow"
                             binding.profileProgressLayout.visibility = View.GONE
                         }
                             .addOnFailureListener { Toast.makeText(requireContext(),
@@ -143,7 +147,8 @@ class SellerAdsFragment : ElectroFragment() {
                             DATA_USER_FOLLOW, followedUsers
                         ).addOnSuccessListener {
                             Toast.makeText(requireContext(),
-                                "Unfollowed", Toast.LENGTH_SHORT).show()
+                                "Followed", Toast.LENGTH_SHORT).show()
+                            binding.btnFollow.text = "Unfollow"
                             binding.profileProgressLayout.visibility = View.GONE
                         }
                             .addOnFailureListener { Toast.makeText(requireContext(),

@@ -49,6 +49,7 @@ class ProfileFragment : ElectroFragment() {
     private var userName: String? = null
     private var userPhone: String? = null
     private var adapter: AdvertisementsAdapter?=null
+    private var user: User?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +68,7 @@ class ProfileFragment : ElectroFragment() {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         with(binding) {
-            listener = AdListenerImpl(binding.rvYourAds,this@ProfileFragment)
+            listener = AdListenerImpl(binding.rvUserAds,this@ProfileFragment, adapter!!)
             adapter!!.setListener(listener!!)
             ivUserPhoto.setOnClickListener { launchPhotoLoading() }
             btnSignout.setOnClickListener {
@@ -89,7 +90,7 @@ class ProfileFragment : ElectroFragment() {
 
         firebaseDB.collection(DATA_USERS).document(userId!!).get()
             .addOnSuccessListener {
-                val user = it.toObject(User::class.java)
+                user = it.toObject(User::class.java)
                 imageUrl = user?.imageUrl
                 userName = user?.username
                 userPhone = user?.phoneNumber
@@ -103,9 +104,9 @@ class ProfileFragment : ElectroFragment() {
                     tvPhone.text = phone
                 }
             }
-        rvYourAds.layoutManager = GridLayoutManager(context,2)
-        adapter = AdvertisementsAdapter(arrayListOf())
-        rvYourAds.adapter = adapter
+        rvUserAds.layoutManager = GridLayoutManager(context,2)
+        adapter = AdvertisementsAdapter(arrayListOf(), userId!!)
+        rvUserAds.adapter = adapter
         updateList()
 
     }

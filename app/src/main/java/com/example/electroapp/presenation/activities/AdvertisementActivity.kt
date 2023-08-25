@@ -103,7 +103,6 @@ class AdvertisementActivity : AppCompatActivity() {
 
     companion object{
         const val EXTRA_AD = "ad"
-        const val CENTER_CROP_MODE = "center_crop"
 
         fun newIntent(context: Context, ad: Advertisement): Intent{
             val intent = Intent(context, AdvertisementActivity::class.java)

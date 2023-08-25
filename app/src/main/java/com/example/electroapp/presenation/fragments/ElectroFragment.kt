@@ -6,11 +6,11 @@ import com.example.electroapp.presenation.listeners.AdListenerImpl
 
 abstract class ElectroFragment: Fragment() {
     protected var listener: AdListenerImpl?=null
-    protected var currentUser: User?= null
+    //protected var user: User?= null
 
-    fun setUser(user: User){
-        this.currentUser = user
-        //listener?.user = user
+    fun setUser(newUser: User){
+       // this.user = newUser
+
     }
 
 }
