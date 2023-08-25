@@ -174,11 +174,11 @@ class NewAdActivity : AppCompatActivity() {
                 it.printStackTrace()
                 binding.llProgressBar.visibility = View.GONE
                 Toast.makeText(this@NewAdActivity, "Failed to post", Toast.LENGTH_SHORT).show()
+                startActivity(HomeActivity.newIntent(this))
             }
         } else {
             binding.llProgressBar.visibility = View.GONE
         }
-        startActivity(HomeActivity.newIntent(this))
     }
 
     override fun onBackPressed() {
