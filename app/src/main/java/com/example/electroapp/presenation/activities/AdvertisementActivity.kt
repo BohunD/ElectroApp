@@ -25,6 +25,7 @@ import com.example.electroapp.presenation.adapters.AdFilterTvAdapter
 import com.example.electroapp.presenation.adapters.PhotosViewPagerAdapter
 import com.example.electroapp.presenation.fragments.PhotosVpFragment
 import com.example.electroapp.presenation.fragments.PhotosVpFullScreenFragment
+import com.example.electroapp.presenation.fragments.SellerAdsFragment
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -91,8 +92,11 @@ class AdvertisementActivity : AppCompatActivity() {
                     }.addOnFailureListener {
                         it.printStackTrace()
                     }
+                binding.sellerAds.setOnClickListener {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_container,
+                        SellerAdsFragment.newInstance(ad))
+                        .addToBackStack("sellers_ads").commit() }
             }
-
         }
 
     }

@@ -147,7 +147,6 @@ class ProfileFragment : ElectroFragment() {
 
     private fun updateList() {
         val ads = arrayListOf<Advertisement>()
-        Log.d("MyLog", firebaseDB.collection(DATA_ADS).whereEqualTo(DATA_AD_USER_ID, userId).get().toString())
         firebaseDB.collection(DATA_ADS).whereEqualTo(DATA_AD_USER_ID, userId).get()
             .addOnSuccessListener { list ->
                 for (document in list.documents) {
