@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.example.electroapp.R
@@ -49,6 +50,26 @@ class HomeFragment : ElectroFragment() {
         listener = AdListenerImpl(binding.rvAdvertisements,this@HomeFragment, adapter!!)
         adapter!!.setListener(listener!!)
         binding.rvAdvertisements.adapter = adapter
+        updateList()
+        binding.etSearch.setOnEditorActionListener { textView, actionId, keyEvent ->
+            if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH){
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.main_container, SearchFragment.newInstance(binding.etSearch.text.toString()))
+                    .addToBackStack("search").commit()
+                binding.etSearch.setText("")
+                binding.etSearch.clearFocus()
+            }
+            true
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateList()
+    }
+
+    override fun onStart() {
+        super.onStart()
         updateList()
     }
     private fun updateList() {

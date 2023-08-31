@@ -16,7 +16,8 @@ data class Advertisement(
     val city: String?,
     val dateTime: Long?,
     val userId: String?,
-    val likedUsers: ArrayList<String>?=null
+    val likedUsers: ArrayList<String>?= arrayListOf(""),
+    val nameInArray: ArrayList<String>?= name?.split(" ")?.let { ArrayList(it) } ?: null
 ): Parcelable{
     constructor() : this(null, null, null, null, null, null, null, null, null, null, null)
 }

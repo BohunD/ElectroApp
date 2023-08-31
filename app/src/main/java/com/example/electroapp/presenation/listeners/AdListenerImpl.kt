@@ -41,14 +41,16 @@ class AdListenerImpl(
 
         isProcessingLike = true
 
-        var likedUsers = ad?.likedUsers
+        var likedUsers = ad?.likedUsers?: arrayListOf()
         val isCurrentlyLiked = ad?.likedUsers?.contains(userId) == true
 
         firebaseDB.collection(DATA_ADS).document(ad?.adId!!).get()
             .addOnSuccessListener {
                 if (isCurrentlyLiked) {
+                    Log.d("LIKE", "remove $userId")
                     likedUsers?.remove(userId)
                 } else {
+                    Log.d("LIKE", "add $userId")
                     likedUsers?.add(userId!!)
                 }
 

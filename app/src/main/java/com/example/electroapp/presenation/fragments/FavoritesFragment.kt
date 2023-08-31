@@ -74,18 +74,18 @@ class FavoritesFragment : ElectroFragment() {
     }
 
     private fun updateList(){
-            val ads = arrayListOf<Advertisement>()
-            firebaseDB.collection(DATA_ADS).whereArrayContains(DATA_AD_LIKES, userId!!).get()
-                .addOnSuccessListener {list->
-                    Log.d("Fav1", list.toString())
-                    for(doc in list.documents){
-                        val ad = doc.toObject(Advertisement::class.java)
+        val ads = arrayListOf<Advertisement>()
+        firebaseDB.collection(DATA_ADS).whereArrayContains(DATA_AD_LIKES, userId!!).get()
+            .addOnSuccessListener {list->
+                Log.d("Fav1", list.toString())
+                for(doc in list.documents){
+                    val ad = doc.toObject(Advertisement::class.java)
 
-                        ad?.let { ads.add(it) }
-                    }
-                    Log.d("Fav", ads.toString())
-                    updateAdapter(ads)
-                }.addOnFailureListener { it.printStackTrace() }
+                    ad?.let { ads.add(it) }
+                }
+                Log.d("Fav", ads.toString())
+                updateAdapter(ads)
+            }.addOnFailureListener { it.printStackTrace() }
 
 
 

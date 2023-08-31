@@ -169,6 +169,7 @@ class NewAdActivity : AppCompatActivity() {
                 userId!!
             )
             adId.set(ad).addOnCompleteListener {
+                startActivity(HomeActivity.newIntent(this))
                 finish()
             }.addOnFailureListener {
                 it.printStackTrace()
